@@ -1,5 +1,6 @@
 package com.example.hp.lively;
 
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,9 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
+import android.widget.ImageView;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Sergii Varenyk on 28.09.15.
@@ -54,7 +57,7 @@ public class LivelyFragment extends Fragment{
             }
             ArrayList imageUrlList = new ArrayList();
             for(LivelyPin lp : pinList) {
-                imageUrlList.add((lp.getNote()).toString());
+                imageUrlList.add((lp.getImageUrl()).toString());
                 Log.i("pinList", "" + (lp.getImageUrl()).toString());
             }
             return imageUrlList;
@@ -73,9 +76,27 @@ public class LivelyFragment extends Fragment{
             return;
         }
         if(mPins != null){
-            mGridView.setAdapter(new ArrayAdapter<LivelyPin>(getActivity(),android.R.layout.simple_gallery_item,mPins));
+            mGridView.setAdapter(new PinsGalleryAdapter(mPins));
         }else{
             mGridView.setAdapter(null);
+        }
+    }
+
+    //create user's adapter
+    private class PinsGalleryAdapter extends ArrayAdapter<LivelyPin>{
+
+        public PinsGalleryAdapter(ArrayList<LivelyPin> pins) {
+            super(getActivity(), 0, pins);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent){
+            if (convertView == null){
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.gallery_pins,parent,false);
+            }
+            ImageView imageView = (ImageView)convertView.findViewById(R.id.gallery_pins_imageView);
+            imageView.setImageResource(R.mipmap.loading);
+            return convertView;
         }
     }
 

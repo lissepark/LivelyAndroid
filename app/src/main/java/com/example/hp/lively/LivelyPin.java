@@ -77,7 +77,7 @@ public class LivelyPin {
                     Iterator<String> keys = imageObj.keys();
                     while(keys.hasNext()) {
                         String key = keys.next();
-                        if (imageObj.get(key) instanceof JSONObject) {
+                        if ((imageObj.get(key) instanceof JSONObject) && (key.equals("original"))) {
                             JSONObject iObj = imageObj.getJSONObject(key);
                             if (iObj.has("url")) {
                                 pin.setImageUrl(iObj.getString("url"));
@@ -93,7 +93,7 @@ public class LivelyPin {
     }
 
 
-    //from this to the end remove in ListFragment
+    //from this to the end remove in ListFragment??
 
     public static ArrayList<LivelyPin> makePinList(Object obj) {
         ArrayList<LivelyPin> pinList = new ArrayList<LivelyPin>();

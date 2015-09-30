@@ -7,7 +7,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created by hp on 27.09.15.
+ * Created by Sergii Varenyk on 27.09.15.
  */
 public class LivelyFetch {
 /*
