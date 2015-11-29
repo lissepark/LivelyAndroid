@@ -1,8 +1,10 @@
 package com.example.hp.lively;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,13 +24,31 @@ import java.util.List;
 public class LivelyFragment extends Fragment{
     GridView mGridView;
     ArrayList<LivelyPin> mPins;
+    MyHandlerThread<ImageView> imageDownload;
 
+    /*
+    public static final String TAG = "LivelyFetch";
+    private static final String ENDPOINT = "https://api.pinterest.com/v1/";
+    private static final String API_KEY = "AbVjN2mfM600svPbvse7FyqD22sPFAeqkvDuMidCgxHUduAUXwAAAAA";
+*/
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         new FetchEvent().execute();
+        imageDownload = new MyHandlerThread<ImageView>(new Handler());
+        imageDownload.setListener(new MyHandlerThread.Listener<ImageView>(){
+            @Override
+            public void handlerDownloaded(ImageView imageView, Bitmap image) {
+                if (isVisible()){
+                    imageView.setImageBitmap(image);
+                }
+            }
+        });
+        imageDownload.start();
+        imageDownload.getLooper();
+
     }
 
     @Override
@@ -48,7 +68,6 @@ public class LivelyFragment extends Fragment{
             try {
                 String result = new LivelyFetch().getUrl("https://api.pinterest.com/v1/me/pins/?access_token=AbVjN2mfM600svPbvse7FyqD22sPFAeqkvDuMidCgxHUduAUXwAAAAA" +
                         "&fields=id,link,note,image[small]&limit=100");
-                Log.i("Ura: it works ", "" + result);
                 pin = new LivelyPin();
                 pinList = pin.makePinList(result);
 
@@ -82,7 +101,6 @@ public class LivelyFragment extends Fragment{
         }
     }
 
-    //create user's adapter
     private class PinsGalleryAdapter extends ArrayAdapter<LivelyPin>{
 
         public PinsGalleryAdapter(ArrayList<LivelyPin> pins) {
@@ -95,9 +113,23 @@ public class LivelyFragment extends Fragment{
                 convertView = getActivity().getLayoutInflater().inflate(R.layout.gallery_pins,parent,false);
             }
             ImageView imageView = (ImageView)convertView.findViewById(R.id.gallery_pins_imageView);
-            imageView.setImageResource(R.mipmap.loading);
+            imageView.setImageResource(R.mipmap.ic_launcher);
+            String livelyPinImageUrl = String.valueOf(getItem(position));
+            imageDownload.queue(imageView,livelyPinImageUrl);
+
             return convertView;
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        imageDownload.quit();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        imageDownload.clearQueue();
+    }
 }

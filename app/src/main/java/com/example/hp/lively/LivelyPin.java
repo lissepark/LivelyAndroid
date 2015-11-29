@@ -87,13 +87,11 @@ public class LivelyPin {
                 }
             }
         } catch (JSONException e) {
-            Log.i("LivelyPin JSON parse error %s", e.getLocalizedMessage());
+            Log.i("Pin JSON parse error %s", e.getLocalizedMessage());
         }
         return pin;
     }
 
-
-    //from this to the end remove in ListFragment??
 
     public static ArrayList<LivelyPin> makePinList(Object obj) {
         ArrayList<LivelyPin> pinList = new ArrayList<LivelyPin>();
@@ -115,7 +113,7 @@ public class LivelyPin {
                 }
             }
         } catch (JSONException e){
-            Log.i("LivelyPinList parse JSON error %s", e.getLocalizedMessage());
+            Log.i("PinList parse error %s", e.getLocalizedMessage());
         }
         return pinList;
     }
